@@ -1,0 +1,3 @@
+[submodule "internal/c_impl"]
+	path = internal/c_impl
+	url = https://github.com/xaionaro/supercop
