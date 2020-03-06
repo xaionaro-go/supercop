@@ -3,17 +3,28 @@ NAME=amd64_51_30k
 CC= gcc
 CFLAGS= -Wall -Wextra -O3 -fwrapv -fPIC -I/usr/include/sodium
 LDFLAGS= $(shell pkg-config --libs libsodium)
+
+# ---
+
 ifeq ($(CC),gcc)
-LDFLAGS+= -flto=8 -Wl,--gc-sections
-CFLAGS+= -fdata-sections -ffunction-sections
+	LDFLAGS+= -flto=8 -Wl,--gc-sections
+	CFLAGS+= -fdata-sections -ffunction-sections
 endif
 
 TARGETS=$(NAME).a
 
-LIB_SRCS=$(wildcard ../../../../internal/c_impl/crypto_sign/ed25519/amd64-51-30k/*.[sc])
+IMPL_DIR=impl
+
+LIB_SRCS=$(wildcard $(IMPL_DIR)/*.[sc])
 LIB_OBJS=$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(LIB_SRCS)))
 
 all: $(TARGETS)
+
+#patch:
+#	sh -xc 'PREV_WD="`pwd`"; cd $(IMPL_DIR) && QUILT_PATCHES="$${PREV_WD}/patches" quilt push -a'
+#
+#unpatch:
+#	sh -xc 'PREV_WD="`pwd`"; cd $(IMPL_DIR) && QUILT_PATCHES="$${PREV_WD}/patches" quilt pop -a'
 
 clean:
 	-rm -f $(TARGETS) $(LIB_OBJS)
